@@ -1,0 +1,10 @@
+<h1>Piedra, Papel o Tijeras</h1>
+<p>Por favor registre los jugadores</p>
+<br>
+<form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+    <p>Player 1 complete name</p>
+    <input type="text" formControlName="u_name1">
+    <p>Player 2 complete name</p>
+    <input type="text" formControlName="u_name2">
+    <button class="button" type="submit" >Registrar</button>
+</form>

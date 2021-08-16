@@ -1,0 +1,28 @@
+<div *ngIf="info">
+    
+    <h2 *ngIf="round < 3">Round {{round+1}}</h2>
+    <h2 *ngIf="round >= 3">Finished</h2>
+    <br>
+    <p> {{ (userOrder == 1 ? info.user1.completeName : info.user2.completeName) }} </p>
+    <input [disabled]="waiting" type="button" value="Rock"(click)="registerMove(0)">
+    <input [disabled]="waiting" type="button" value="Paper" (click)="registerMove(1)">
+    <input [disabled]="waiting" type="button" value="Scissors"(click)="registerMove(2)">
+    <div *ngIf="round > 0">
+        <table>
+            <thead>
+                <td>Round</td>
+                <td>Winner</td>
+            </thead>
+            <tbody>
+                <tr *ngFor="let x of rounds; index as i">
+                    <td>{{i+1}}</td>
+                    <td>{{x}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div *ngIf="rounds.length == 3">
+        <input [disabled]="!waiting" type="button" value="See the winner!"(click)="redirectToWinner()">
+    </div>
+</div>
