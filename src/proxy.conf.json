@@ -1,5 +1,5 @@
 {
-    "/api": {
+    "/api/*": {
       "target": "http://158.69.60.179:5001",
       "secure": false
     }
