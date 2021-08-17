@@ -2,8 +2,9 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 import { StateConstantsEnum } from '../constants/state-enum';
-import { MatchCreated } from '../models/match-created';
-import { RegisterRound } from '../models/register-round-model';
+import { MatchState} from '../models/match-created';
+import { RegisterMove } from '../models/register-round-model';
+import { ErrorService } from '../services/error-service.service';
 import { MatchService } from '../services/match.service';
 
 @Component({
@@ -13,93 +14,61 @@ import { MatchService } from '../services/match.service';
 })
 export class MatchPlayComponent implements OnInit {
 
-  constructor(private router: Router, private matchService: MatchService) {
+  constructor(private router: Router, private matchService: MatchService, private errorService: ErrorService) {
   
   }
 
-  info: MatchCreated;
-  round: number;
-  userOrder: number;
-  user1Move: number;
-  user2Move: number;
+  info: MatchState;
   waiting: boolean;
-  rounds: any[] = [];
-  roundInd: string = 'roundInfo'
-
+  displayedColumns: any = ['round', 'winner']
   ngOnInit(): void {
     let i = localStorage['matchInfo'];
     console.log(i);
-    this.round = 0;
     if(i)
     {
       this.info = JSON.parse(i);
-      if(localStorage[this.roundInd]){
-        this.rounds = JSON.parse(localStorage[this.roundInd]);
-        this.round = this.rounds.length;
-        if(this.round >= 3) 
-          this.waiting = true;
+      if(this.info.isFinished){
+        this.waiting = true;
       }
+      console.log(this.info)
     }
     else
     {
       this.router.navigate(['/'])
     }
-
-    this.userOrder = 1;
   }
 
   registerMove(move: number): void{
-    if(this.userOrder == 1)
-    {
-      this.user1Move = move;
-      this.userOrder = 2;
-    }
-    else
-    {
-      this.user2Move = move;
-      this.userOrder = 1;
       this.waiting = true;
-      let model: RegisterRound = {
+      let model: RegisterMove = {
         matchId: this.info.matchId,
-        user1Move: this.user1Move,
-        user2Move: this.user2Move
+        roundOrder: this.info.round,
+        userMove: move,
+        userOrder: this.info.userOrderTurn
       }
       this.matchService.registerRound(model).subscribe(x => {
-        this.round = x.data.round;
+        console.log('registed movement');
+        console.log(x);
+        if(x.error)
+        {
+          this.errorService.showErrorSwal(x.errorMessages)
+          return;
+        }
+        this.info = x.data;
+        /*
         let on: SweetAlertOptions = {
-          html: `Round ${this.round}: [${this.parseStateRound(StateConstantsEnum[x.data.winnerOrder].toString())}]`,
+          html: `Round ${this.info.round}: [${this.parseStateRound(StateConstantsEnum[x.data.winnerOrder].toString())}]`,
           icon: 'success',
         };
-        Swal.fire(on);
-        let _winner = 'DRAW';
-        switch(x.data.winnerOrder){
-          case 1: _winner = this.info.user1.completeName; break;
-          case 2: _winner = this.info.user2.completeName; break;
-        }
-        this.rounds.push(_winner)
-        localStorage.setItem(this.roundInd, JSON.stringify(this.rounds));
-        if(x.data.round < 3)
+        Swal.fire(on);*/
+        if(!this.info.isFinished)
           this.waiting = false;
-        else{
-
-          }
       }, error => {
-        let _text = '';
-        error.error.errorMessages.forEach((message: any) => _text += `<il>${message}</il>`)
-          let on: SweetAlertOptions = {
-            html: `Errors:<br><ul type="circle">${_text}</ul><br> Would you like to start a new game?`,
-            icon: 'error',
-            showCancelButton: true
-          };
-          Swal.fire(on).then(result => {
-            if(result.isConfirmed)
-              this.router.navigate(['/'])
-          });
+        this.errorService.showErrorSwal(error.error.errorMessages)
         }
       );
-    }
   }
-
+/*
   parseStateRound(state: string){
     console.log(state)
     console.log(StateConstantsEnum[StateConstantsEnum.DRAW])
@@ -111,7 +80,7 @@ export class MatchPlayComponent implements OnInit {
     }
     return state;
   }
-
+*/
   redirectToWinner(){
     this.router.navigate(['winner']);
   }

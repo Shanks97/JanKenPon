@@ -1,5 +1,6 @@
-export class RegisterRound{
+export class RegisterMove{
     matchId: string;
-    user1Move: number;
-    user2Move: number;
+    userOrder: number;
+    userMove: number;
+    roundOrder: number;
 }

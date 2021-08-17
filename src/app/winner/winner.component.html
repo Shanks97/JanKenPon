@@ -1,9 +1,7 @@
-<div *ngIf="info.order != 0">
-    <p>We have a winner <strong>{{info.winner.completeName}}</strong></p>
+<div *ngIf="info">
+    <p>We have a winner</p>
+    <p>Player #{{info.order}} </p>
+    <p>Name: <strong>{{info.completeName}}</strong></p>
+    <input type="button" value="Play Again" (click)="playAgain()"/>
+    <input type="button" value="New game"  (click)="newGame()"/>
 </div>
-<div *ngIf="info.order == 0">
-    <p>Draw!!</p>
-</div>
-
-<input type="button" value="Play Again" (click)="playAgain()"/>
-<input type="button" value="New game"  (click)="newGame()"/>

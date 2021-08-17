@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { MatchCreated } from '../models/match-created';
+import { MatchState, UserInformation } from '../models/match-created';
 import { MatchWinner } from '../models/match-winner';
 import { RegisterUserModel } from '../models/register-user-model';
+import { ErrorService } from '../services/error-service.service';
 import { MatchService } from '../services/match.service';
 
 @Component({
@@ -12,9 +13,9 @@ import { MatchService } from '../services/match.service';
   styleUrls: ['./winner.component.css']
 })
 export class WinnerComponent implements OnInit {
-  info: MatchWinner
-  matchData: MatchCreated;
-  constructor(private matchService: MatchService, private router: Router) { }
+  info: UserInformation
+  matchData: MatchState;
+  constructor(private matchService: MatchService, private router: Router, private errorService: ErrorService) { }
   
   ngOnInit(): void {
     let i = localStorage['matchInfo'];
@@ -43,9 +44,7 @@ export class WinnerComponent implements OnInit {
     this.matchService.startMatch(u1).subscribe(x => {
      if(x.error)
      {
-       let text = ''
-       x.errorMessages.forEach(x => text += '\n'+ x);
-       Swal.fire(text);
+       this.errorService.showErrorSwal(x.errorMessages)
        return;
      }
  
@@ -53,7 +52,7 @@ export class WinnerComponent implements OnInit {
      localStorage.setItem('matchInfo', JSON.stringify(x.data));
      Swal.fire('Ready!');
      this.router.navigate(['play']);
-    });   
+    }, error => this.errorService.showErrorSwal(error.error.errorMessages));   
    }
 
   newGame(){

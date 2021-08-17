@@ -1,3 +1,12 @@
 strong {
     text-transform: uppercase;
 }
+table{
+    width: 100%;
+}
+#main{
+    width: 50%;
+}
+#area-table{
+    width: 50%;
+}

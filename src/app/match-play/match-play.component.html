@@ -1,28 +1,32 @@
-<div *ngIf="info">
-    
-    <h2 *ngIf="round < 3">Round {{round+1}}</h2>
-    <h2 *ngIf="round >= 3">Finished</h2>
-    <br>
-    <p> {{ (userOrder == 1 ? info.user1.completeName : info.user2.completeName) }} </p>
-    <input [disabled]="waiting" type="button" value="Rock"(click)="registerMove(0)">
-    <input [disabled]="waiting" type="button" value="Paper" (click)="registerMove(1)">
-    <input [disabled]="waiting" type="button" value="Scissors"(click)="registerMove(2)">
-    <div *ngIf="round > 0">
-        <table>
-            <thead>
-                <td>Round</td>
-                <td>Winner</td>
-            </thead>
-            <tbody>
-                <tr *ngFor="let x of rounds; index as i">
-                    <td>{{i+1}}</td>
-                    <td>{{x}}</td>
-                </tr>
-            </tbody>
-        </table>
+<div *ngIf="info" style="display: flex; margin: 20px;">
+    <div id="main">
+        <h2 *ngIf="!info.isFinished">Round {{info.round}}</h2>
+        <h2 *ngIf="info.isFinished">Finished</h2>
+        <br>
+        <p> {{ (info.userOrderTurn == 1 ? info.user1.completeName : info.user2.completeName) }} </p>
+        <input [disabled]="waiting" type="button" value="Rock" (click)="registerMove(0)">
+        <input [disabled]="waiting" type="button" value="Paper" (click)="registerMove(1)">
+        <input [disabled]="waiting" type="button" value="Scissors" (click)="registerMove(2)">
+
+        <div *ngIf="info.isFinished">
+            <input [disabled]="!waiting" type="button" value="See the winner!" (click)="redirectToWinner()">
+        </div>
     </div>
-    
-    <div *ngIf="rounds.length == 3">
-        <input [disabled]="!waiting" type="button" value="See the winner!"(click)="redirectToWinner()">
+    <div id="main" *ngIf="info.parcialRounds && info.parcialRounds.length > 0">
+        <table mat-table [dataSource]="info.parcialRounds" class="mat-elevation-z8">
+
+            <ng-container matColumnDef="round">
+                <th mat-header-cell *matHeaderCellDef> Round </th>
+                <td mat-cell *matCellDef="let element"> {{element.round}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="winner">
+                <th mat-header-cell *matHeaderCellDef> Winner </th>
+                <td mat-cell *matCellDef="let element"> {{element.winner}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
     </div>
 </div>
