@@ -13,7 +13,8 @@ import { RoundStateModel } from '../models/round-state-model';
 })
 export class MatchService {
 
-  url: string = 'http://localhost:5000'
+  //url: string = 'http://localhost:5000'
+  url: string = 'http://158.69.60.179:5001'
   constructor(private http: HttpClient) { }
 
   startMatch(model: RegisterUserModel): Observable<ApiResponse<MatchState>>{
